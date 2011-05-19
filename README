@@ -1,0 +1,19 @@
+A simple Java program designed to teach
+the author how a programming heap works.
+This heap uses a subclass HeapEntry to 
+store an Object and an integer, which 
+is interpreted as its priority where a 
+larger number is better.
+
+The heap program is designed to have 
+HeapEntries added, which will be 
+automatically sorted into the correct 
+position. The heap can also have its 
+highest priority item removed, causing 
+it to rebalance itself after the removal.
+
+The heap is also able to accept an 
+array of HeapEntry objects with no order 
+and order them by priority, then pasting
+them back (in-order) back into the 
+supplied array; an in-place heap-sort.
