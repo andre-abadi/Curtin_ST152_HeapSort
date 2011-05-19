@@ -1,7 +1,7 @@
 package heapsort;
 
   /**
-   * Private class describing and entry in the heap.
+   * Class describing and entry in the heap, having an object and a priority.
    */
   public class HeapEntry {
     //public fields of entry instance
@@ -9,8 +9,8 @@ package heapsort;
     public Object value;
     /**
      * Default constructor, populates all fields.
-     * @param prty int The priority of the object
-     * @param vle Object The object to add.
+     * @param pty int The priority of the object
+     * @param vlue Object The object to add.
      */
     public HeapEntry(int pty, Object vlue) {
       priority = pty;
