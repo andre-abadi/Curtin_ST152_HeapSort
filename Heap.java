@@ -9,7 +9,7 @@ public class Heap {
   //stores the heap in array form
   private HeapEntry[] heap;
   //keeps a count of the current, last array index used
-  private int heapCount;
+  private int latestIndex;
 
 
   /**
@@ -17,7 +17,7 @@ public class Heap {
    * @param maxSize int The size of the array in which to store the heap
    */
   public Heap(int maxSize) {
-    heapCount = 0;
+    latestIndex = 0;
     heap = new HeapEntry[maxSize];
   }
 
@@ -28,26 +28,33 @@ public class Heap {
    */
   public void add(int pty, Object vlue) {
     try {
-      //part 1; add to next free slot in array
-      heap[heapCount] = new HeapEntry(pty, vlue);
-      heapCount += 1;
+      //add the given object to the new last-index of the array
+      heap[latestIndex] = new HeapEntry(pty, vlue);
+      //increment the latestIndex pointer int
+      latestIndex += 1;
     } catch (Exception e) {
+      //inform the user of errors adding to array
       System.out.println("Out of space in heap: " + e.getMessage());
     }
-    //part 2; trickle up to correct position
+    trickleUp();
+  }
+
+  /**
+   * Checks that the latest entry of an array is in the correct position.
+   */
+  public void trickleUp() {
     //start by setting a counter at the back of the occupied cells
-    int counter = heapCount;
-    //go through our parents
-    //priorities should get higher as we go up the tree
-    while (counter > 0) {
+    int current = latestIndex;
+    //go up as long as our current position doesn't go beyond index 0
+    while (current >= 0) {
       //calculate the index of the parent of our node
-      int parent = (counter-1)/2;
+      int parent = (current-1)/2;
       //if the added entry has higher priority than parent, then swap them
-      if (heap[counter].priority > heap[parent].priority) {
-        swapEntries(heap, counter, parent);
+      if (heap[current].priority > heap[parent].priority) {
+        swapEntries(heap, current, parent);
       }
       //and then move up the tree to the parent of the current node
-      counter = (counter-1)/2;
+      current = parent;
     }
   }
 
@@ -71,66 +78,46 @@ public class Heap {
     //initialise a variable to store the top of the heap that we will return
     HeapEntry top = null;
     //do the following only if the heap has its counter past 0
-    if (heapCount == 0) {
+    if (heap.length == 0) {
       //otherwise inform the user that the heap is empty
       System.out.println("Heap is empty, try adding some values first.");
     } else {
       //store a variable to keep track of where we are in the tree
-      //start off at the root of the tree
+      //starting at the root of the tree
       int current = 0;
       //part 1; pop the highest priority; the top of the heap
-      top = heap[0];
+      top = new HeapEntry(heap[0]);
       //swap the end of the array with the start of the array
-      swapEntries(heap, 0, heapCount);
-      //part 2; trickle the new top value down to its rightful place
-      //do this so long as the right child of the current node is not
-      //past the last-pointer of the array
-      while ( ((current*2)+2) <= heapCount ) {
-        //compute the index of the left child
-        int leftChild = ((current*2)+1);
-        //compute the index of the right child
-        int rightChild = ((current*2)+2);
-        //default the larger (higher priority) child to the left child
-        int largerChild = leftChild;
-        //if the right child does have higher priority, set it as
-        //the larger child
-        if (heap[rightChild].priority > heap[leftChild].priority) {
-          largerChild = rightChild;
-        }
-        //if the higher priority child has higher priority than current
-        //node, then swap them
-        if (heap[largerChild].priority > heap[current].priority) {
-          swapEntries(heap,largerChild,current);
-        }
-      }
+      swapEntries(heap, 0, latestIndex);
     }
     return top;
   }
 
-  /**
-   * Sorts an array of HeapEntries in-place.
-   * @param array The array that is to be sorted by priority.
-   */
-  public void heapSort(HeapEntry[] array) {
-    Heap tempHeap = new Heap(array.length);
-    int counter = 0;
-    if (array.length == 0) {
-      System.out.println("Please give an input array.");
-    } else {
-      while (counter < array.length) {
-        int currentPriority = array[counter].priority;
-        Object currentObject = array[counter].value;
-        tempHeap.add(currentPriority, currentObject);
-        System.out.println("Added " + currentObject);
-        counter += 1;
-      }
-      counter = 0;
-      while (counter < array.length) {
-        array[counter] = tempHeap.remove();
-        System.out.println("Removed " + array[counter].value);
-        counter += 1;
-      }
+  public void trickleDown() {
+    int current = 0;
+    //keep going as long as there is a left child
+    //i.e. keep going as long as there is another level of children below
+    while (((current*2)+1) <= latestIndex) {
+        //compute the index of the left child
+        int leftChild = ((current*2)+1);
+        //compute the index of the right child
+        int rightChild = ((current*2)+2);
+        //default the larger child to the left child
+        int largerChild = leftChild;
+        //if there is no right child, we don't need to select the larger child
+        if (heap[rightChild] == null) {
+          //and can just compare the left
+          if (heap[largerChild].priority > heap[current].priority) {
+            swapEntries(heap,largerChild,current);
+          }
+
+        } else {
+          if (heap[rightChild].priority > heap[leftChild].priority) {
+            largerChild = rightChild;
+          }
+          swapEntries(heap,largerChild,current);
+        }
+        current = largerChild;
     }
   }
-
 }
